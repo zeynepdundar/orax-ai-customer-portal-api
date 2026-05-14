@@ -19,11 +19,13 @@
     "express-handlebars": "^9.0.1"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/express-handlebars": "^5.3.1",
     "@types/node": "^25.7.0",
     "nodemon": "^3.1.14",
+    "tailwindcss": "^4.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   }
