@@ -1,0 +1,21 @@
+{{!-- Customers page — mirrors src/app/(app)/customers/page.tsx --}}
+<div class="p-8 space-y-6">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-semibold text-gray-900">{{pageTitle}}</h2>
+      <p class="text-sm text-gray-500 mt-1">{{pageDescription}}</p>
+    </div>
+    <div class="flex items-center gap-2">
+      {{> ui/button label=exportLabel variant="outline" iconBefore="download"}}
+      {{> ui/button label=newCustomerLabel iconBefore="plus"}}
+    </div>
+  </div>
+
+  {{#> ui/card padding="p-5"}}
+    <form method="GET" action="/customers">
+      {{> ui/search-input name="search" label=searchLabel placeholder=searchPlaceholder value=search}}
+    </form>
+  {{/ui/card}}
+
+  {{> ui/data-table columns=columns rowsHtml=rowsHtml}}
+</div>

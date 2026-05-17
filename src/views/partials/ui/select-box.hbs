@@ -1,0 +1,31 @@
+{{!--
+  Select box partial — mirrors src/components/ui/SelectBox.tsx
+  Use as a block partial so consumers can pass <option> children:
+    {{#> ui/select-box name="status" label="Status"}}
+      <option value="all">All</option>
+      <option value="salable">Salable</option>
+    {{/ui/select-box}}
+
+  Or pass an `options` array of {value,label} objects:
+    {{> ui/select-box name="status" label="Status" options=statusOptions value=statusFilter}}
+--}}
+<div class="space-y-1.5 w-full">
+  {{#if label}}
+    <label {{#if id}}for="{{id}}"{{else}}{{#if name}}for="{{name}}"{{/if}}{{/if}} class="text-sm font-medium text-gray-700">{{label}}</label>
+  {{/if}}
+  <select
+    {{#if id}}id="{{id}}"{{else}}{{#if name}}id="{{name}}"{{/if}}{{/if}}
+    {{#if name}}name="{{name}}"{{/if}}
+    {{#if xModel}}x-model="{{xModel}}"{{/if}}
+    class="w-full h-9 px-3 py-1 text-sm rounded-lg border outline-none transition bg-white border-gray-200 focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:border-brand-500 disabled:opacity-50 disabled:cursor-not-allowed {{extraClass}}">
+    {{#if options}}
+      {{#each options}}
+        <option value="{{this.value}}" {{#if (eq ../value this.value)}}selected{{/if}}>{{this.label}}</option>
+      {{/each}}
+    {{else}}
+      {{> @partial-block}}
+    {{/if}}
+  </select>
+  {{#if hint}}{{#unless error}}<p class="text-xs text-gray-500">{{hint}}</p>{{/unless}}{{/if}}
+  {{#if error}}<p class="text-xs text-red-500">{{error}}</p>{{/if}}
+</div>

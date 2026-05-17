@@ -1,0 +1,167 @@
+{{!-- Settings page — mirrors src/app/(app)/settings/page.tsx --}}
+<div class="p-8 space-y-6" x-data="{ showAddUser: false, role: 'viewer' }">
+
+  {{> ui/section-header title=pageTitle description=pageDescription}}
+
+  {{#if flashMessage}}
+    <div class="max-w-4xl rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-blue-700">{{flashMessage}}</div>
+  {{/if}}
+
+  <div class="space-y-4">
+
+    {{!-- Profile --}}
+    {{#> ui/card padding="p-6"}}
+      <div class="flex items-center gap-3 mb-5">
+        <span class="text-gray-600">{{{icon "user" class="w-5 h-5"}}}</span>
+        <h3 class="text-sm font-semibold text-gray-900">{{labels.profile}}</h3>
+      </div>
+      <form method="POST" action="/settings/save" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {{> ui/input name="fullName" label=labels.fullName value="Ahmet Yilmaz"}}
+          {{> ui/input name="company" label=labels.company value="Avixa"}}
+        </div>
+        {{> ui/input name="email" type="email" label=labels.email value="ahmet@avixa.com"}}
+      </form>
+    {{/ui/card}}
+
+    {{!-- Sub-users --}}
+    {{#> ui/card padding="p-6"}}
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-3">
+          <span class="text-gray-600">{{{icon "users" class="w-5 h-5"}}}</span>
+          <h3 class="text-sm font-semibold text-gray-900">{{labels.subUsersTitle}}</h3>
+        </div>
+        <button type="button" @click="showAddUser = !showAddUser" class="inline-flex items-center h-8 px-3 text-sm rounded-lg bg-blue-600 hover:bg-blue-700 text-white">
+          {{{icon "plus" class="w-4 h-4 mr-1"}}}
+          {{labels.newUser}}
+        </button>
+      </div>
+
+      <form x-show="showAddUser" x-cloak method="POST" action="/settings/users" class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {{> ui/input name="name" label=labels.fullName placeholder=labels.fullNamePlaceholder}}
+          {{> ui/input name="email" type="email" label=labels.email placeholder=labels.emailPlaceholder}}
+        </div>
+        {{#> ui/select-box name="role" label=labels.role extraClass="w-full" xModel="role"}}
+          <option value="admin">{{labels.roleAdmin}}</option>
+          <option value="manager">{{labels.roleManager}}</option>
+          <option value="viewer">{{labels.roleViewer}}</option>
+        {{/ui/select-box}}
+        <div class="flex items-center gap-2">
+          <button type="submit" class="inline-flex items-center h-8 px-3 text-sm rounded-lg bg-brand-500 hover:bg-brand-600 text-white">{{labels.add}}</button>
+          <button type="button" @click="showAddUser = false" class="inline-flex items-center h-8 px-3 text-sm rounded-lg bg-white border border-gray-200 text-gray-900 hover:bg-gray-50">{{labels.cancel}}</button>
+        </div>
+      </form>
+
+      <div class="space-y-2">
+        {{#each subUsers}}
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex items-center gap-3 flex-1">
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold">{{initial this.name}}</div>
+              <div>
+                <p class="text-sm font-medium text-gray-900">{{this.name}}</p>
+                <p class="text-xs text-gray-500">{{this.email}}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border
+                {{#if (eq this.role "admin")}}bg-purple-50 text-purple-700 border-purple-200{{/if}}
+                {{#if (eq this.role "manager")}}bg-blue-50 text-blue-700 border-blue-200{{/if}}
+                {{#if (eq this.role "viewer")}}bg-gray-50 text-gray-700 border-gray-200{{/if}}">
+                {{#if (eq this.role "admin")}}{{../labels.roleAdminShort}}{{/if}}
+                {{#if (eq this.role "manager")}}{{../labels.roleManagerShort}}{{/if}}
+                {{#if (eq this.role "viewer")}}{{../labels.roleViewerShort}}{{/if}}
+              </span>
+              <button type="button" class="inline-flex items-center h-8 px-2 text-sm rounded-lg text-gray-400 hover:text-blue-600 hover:bg-gray-100">{{{icon "edit-2" class="w-4 h-4"}}}</button>
+              <form method="POST" action="/settings/users/{{this.id}}/delete" class="m-0">
+                <button type="submit" class="inline-flex items-center h-8 px-2 text-sm rounded-lg text-gray-400 hover:text-red-600 hover:bg-gray-100">{{{icon "trash-2" class="w-4 h-4"}}}</button>
+              </form>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{/ui/card}}
+
+    {{!-- Notifications --}}
+    {{#> ui/card padding="p-6"}}
+      <div class="flex items-center gap-3 mb-5">
+        <span class="text-gray-600">{{{icon "bell" class="w-5 h-5"}}}</span>
+        <h3 class="text-sm font-semibold text-gray-900">{{labels.notifications}}</h3>
+      </div>
+      <div class="space-y-3">
+        <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div>
+            <p class="text-sm font-medium text-gray-900">{{labels.orderUpdates}}</p>
+            <p class="text-xs text-gray-500">{{labels.orderUpdatesDesc}}</p>
+          </div>
+          <input type="checkbox" checked class="h-4 w-4 accent-blue-600" />
+        </label>
+        <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div>
+            <p class="text-sm font-medium text-gray-900">{{labels.stockAlerts}}</p>
+            <p class="text-xs text-gray-500">{{labels.stockAlertsDesc}}</p>
+          </div>
+          <input type="checkbox" checked class="h-4 w-4 accent-blue-600" />
+        </label>
+        <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div>
+            <p class="text-sm font-medium text-gray-900">{{labels.emailNotifications}}</p>
+            <p class="text-xs text-gray-500">{{labels.emailNotificationsDesc}}</p>
+          </div>
+          <input type="checkbox" class="h-4 w-4 accent-blue-600" />
+        </label>
+      </div>
+    {{/ui/card}}
+
+    {{!-- System --}}
+    {{#> ui/card padding="p-6"}}
+      <div class="flex items-center gap-3 mb-5">
+        <span class="text-gray-600">{{{icon "settings" class="w-5 h-5"}}}</span>
+        <h3 class="text-sm font-semibold text-gray-900">{{labels.system}}</h3>
+      </div>
+      <div class="space-y-4">
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium text-gray-700">{{labels.language}}</label>
+          <div class="relative">
+            <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">{{{icon "globe" class="w-4 h-4"}}}</span>
+            <select class="w-full h-9 pl-9 pr-3 text-sm rounded-lg border bg-white border-gray-200">
+              <option value="tr">{{labels.languageTr}}</option>
+              <option value="en">{{labels.languageEn}}</option>
+              <option value="de">{{labels.languageDe}}</option>
+              <option value="ru">{{labels.languageRu}}</option>
+              <option value="ar">{{labels.languageAr}}</option>
+              <option value="es">{{labels.languageEs}}</option>
+            </select>
+          </div>
+        </div>
+        {{#> ui/select-box label=labels.timezone extraClass="px-3"}}
+          <option value="istanbul">{{labels.timezoneIstanbul}}</option>
+          <option value="utc">{{labels.timezoneUTC}}</option>
+        {{/ui/select-box}}
+      </div>
+    {{/ui/card}}
+
+    {{!-- Security --}}
+    {{#> ui/card padding="p-6"}}
+      <div class="flex items-center gap-3 mb-5">
+        <span class="text-gray-600">{{{icon "lock" class="w-5 h-5"}}}</span>
+        <h3 class="text-sm font-semibold text-gray-900">{{labels.security}}</h3>
+      </div>
+      <div class="space-y-4">
+        {{> ui/input name="currentPassword" type="password" label=labels.currentPassword placeholder=labels.currentPasswordPlaceholder}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {{> ui/input name="newPassword" type="password" label=labels.newPassword placeholder=labels.newPasswordPlaceholder}}
+          {{> ui/input name="confirmPassword" type="password" label=labels.confirmPassword placeholder=labels.confirmPasswordPlaceholder}}
+        </div>
+        {{> ui/button label=labels.changePassword variant="outline" size="sm"}}
+      </div>
+    {{/ui/card}}
+
+    <div class="flex items-center gap-3 pt-2">
+      <form method="POST" action="/settings/save" class="m-0">
+        {{> ui/button label=labels.saveChanges type="submit"}}
+      </form>
+      {{> ui/button label=labels.cancel variant="outline" href="/dashboard"}}
+    </div>
+  </div>
+</div>

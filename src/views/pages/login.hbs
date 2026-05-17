@@ -1,0 +1,70 @@
+{{!-- Login page — mirrors src/app/(auth)/login/page.tsx --}}
+<div class="min-h-screen flex">
+  <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+    <img src="/depo-koridor.jpg" alt="Warehouse corridor" class="absolute inset-0 w-full h-full object-cover" />
+    <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-brand-900/30 to-brand-900/60"></div>
+    <div class="absolute inset-y-0 right-0 w-40 bg-gradient-to-r from-transparent to-brand-950/25"></div>
+    <div class="relative z-10 flex flex-col justify-end p-12 w-full">
+      <div>
+        <p class="text-white/50 text-xs uppercase tracking-widest font-medium mb-3">Warehouse Intelligence</p>
+        <h2 class="text-white text-4xl font-light leading-snug">
+          Smart logistics,<br />
+          <span class="font-semibold">effortless control.</span>
+        </h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full lg:w-1/2 flex items-center justify-center bg-gradient-to-br from-brand-50/50 via-slate-50 to-white px-8 py-12">
+    <div class="w-full max-w-sm">
+      <div class="mb-10">
+        <img src="/branding/logo/logo.svg" alt="OraxAI" class="h-9" />
+      </div>
+
+      <div class="mb-10">
+        <h1 class="text-3xl font-semibold text-gray-900 mb-2">Customer Portal</h1>
+        <p class="text-gray-500 text-sm">Sign in to access your account</p>
+      </div>
+
+      <div class="mb-8 px-4 py-3 rounded-lg border border-brand-100 bg-brand-50/60 flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-success-500 shrink-0"></span>
+        <p class="text-xs text-brand-700">Demo mode — use any email and password</p>
+      </div>
+
+      <form method="POST" action="/login" class="space-y-5">
+        <div class="space-y-1.5">
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Email</label>
+          <input
+            name="email"
+            type="email"
+            placeholder="you@company.com"
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all"
+          />
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Password</label>
+          <input
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            required
+            class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all"
+          />
+        </div>
+
+        <div class="flex justify-end">
+          <button type="button" class="text-xs text-gray-400 hover:text-brand-500 transition-colors">Forgot password?</button>
+        </div>
+
+        <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-white font-medium text-sm rounded-lg h-11 transition-colors shadow-sm">
+          Sign in
+        </button>
+      </form>
+
+      <p class="text-center text-xs text-gray-400 mt-10">
+        © {{year}} OraxAI. All rights reserved.
+      </p>
+    </div>
+  </div>
+</div>

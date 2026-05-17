@@ -1,0 +1,12 @@
+{{!-- Dashboard page — mirrors src/app/(app)/dashboard/page.tsx --}}
+<div class="p-8 space-y-6">
+  {{> ui/section-header title=pageTitle description=pageDescription}}
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    {{#each kpiCards}}
+      {{> ui/metric-card title=this.title value=this.value icon=this.icon variant=this.variant showAction=true actionContext="dashboard"}}
+    {{/each}}
+  </div>
+
+  {{> ui/data-table columns=columns rowsHtml=rowsHtml}}
+</div>

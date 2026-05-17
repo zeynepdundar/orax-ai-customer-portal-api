@@ -1,0 +1,16 @@
+{{!--
+  AskAIButton — mirrors src/components/ui/AskAIButton.tsx
+  Logs context to the console (placeholder for the future AI service call).
+  Params:
+    context  optional string passed to the console log
+    size     "sm" (default) | "md"
+--}}
+<button
+  type="button"
+  title="Ask AI"
+  onclick="console.log('AI Context:', {{json (or context '')}})"
+  class="inline-flex items-center rounded-md border transition-colors text-purple-600 bg-purple-50 border-purple-200 hover:bg-purple-100
+    {{#if (eq size 'md')}}gap-2 px-3 py-2 text-sm{{else}}gap-1 px-2 py-1 text-xs{{/if}}">
+  {{{icon "sparkles" class=(ifElse (eq size 'md') "w-4 h-4" "w-3 h-3")}}}
+  <span>Ask AI</span>
+</button>

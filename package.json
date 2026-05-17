@@ -1,32 +1,48 @@
 {
   "name": "oraxai-customer-service",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Orax AI Customer Portal — Express + Handlebars + TypeScript (migrated from Next.js)",
+  "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "concurrently -k -n app,css \"nodemon\" \"npm run css:watch\"",
     "start": "node dist/index.js",
-    "build": "tsc"
+    "build": "npm run css:build && tsc && npm run copy:views",
+    "copy:views": "node scripts/copy-views.js",
+    "css:build": "tailwindcss -i ./src/public/css/input.css -o ./src/public/css/output.css --minify",
+    "css:watch": "tailwindcss -i ./src/public/css/input.css -o ./src/public/css/output.css --watch"
   },
-  "keywords": [],
+  "keywords": [
+    "express",
+    "handlebars",
+    "typescript",
+    "warehouse"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "express-handlebars": "^9.0.1"
+    "express-handlebars": "^9.0.1",
+    "express-session": "^1.18.1",
+    "i18next": "^25.0.0",
+    "i18next-fs-backend": "^2.6.0",
+    "i18next-http-middleware": "^3.7.4"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.0",
+    "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/express-handlebars": "^5.3.1",
+    "@types/express-session": "^1.18.2",
     "@types/node": "^25.7.0",
+    "concurrently": "^9.2.1",
     "nodemon": "^3.1.14",
     "tailwindcss": "^4.3.0",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^5.7.2"
   }
 }

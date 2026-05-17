@@ -1,0 +1,33 @@
+{{!--
+  Orders page — used by both /inbound-orders and /outbound-orders.
+  Mirrors src/app/(app)/inbound-orders/page.tsx and src/app/(app)/outbound-orders/page.tsx
+  (they share the same shape; the route handler picks the labels).
+--}}
+<div class="p-8 space-y-6" x-data="{ filtersOpen: true }">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-semibold text-gray-900">{{pageTitle}}</h2>
+      <p class="text-sm text-gray-500 mt-1">{{pageDescription}}</p>
+    </div>
+    <div class="flex items-center gap-2">
+      {{> ui/button label=exportLabel variant="outline" iconBefore="download"}}
+      {{> ui/button label=newOrderLabel iconBefore="plus" href=newOrderHref}}
+    </div>
+  </div>
+
+  {{#> ui/card padding="p-4"}}
+    <button type="button" @click="filtersOpen = !filtersOpen" class="flex items-center justify-between w-full">
+      <span class="text-sm font-medium text-gray-700">{{filtersLabel}}</span>
+      <span x-show="filtersOpen" x-cloak>{{{icon "chevron-up" class="w-4 h-4"}}}</span>
+      <span x-show="!filtersOpen" x-cloak>{{{icon "chevron-down" class="w-4 h-4"}}}</span>
+    </button>
+    <div x-show="filtersOpen" x-cloak class="grid grid-cols-2 gap-4 mt-4">
+      <input type="date" name="dateFrom" class="w-full h-9 px-3 text-sm rounded-lg border bg-white border-gray-200 outline-none focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:border-brand-500 transition" />
+      <input type="date" name="dateTo" class="w-full h-9 px-3 text-sm rounded-lg border bg-white border-gray-200 outline-none focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:border-brand-500 transition" />
+      <input name="orderNo" placeholder="{{orderNoLabel}}" class="w-full h-9 px-3 text-sm rounded-lg border bg-white border-gray-200 outline-none focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:border-brand-500 transition" />
+      <input name="avi" placeholder="{{aviLabel}}" class="w-full h-9 px-3 text-sm rounded-lg border bg-white border-gray-200 outline-none focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:border-brand-500 transition" />
+    </div>
+  {{/ui/card}}
+
+  {{> ui/data-table columns=columns rowsHtml=rowsHtml}}
+</div>

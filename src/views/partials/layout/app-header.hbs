@@ -1,0 +1,57 @@
+{{!--
+  App header — mirrors src/components/layout/AppHeader.tsx
+  Includes the command-bar search button, a notification bell, and a user menu
+  with Settings + Logout. Dropdown state is held in Alpine.
+--}}
+<div class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 relative">
+
+  {{!-- Search / command bar trigger --}}
+  <button
+    type="button"
+    @click="$dispatch('open-command-bar')"
+    class="flex items-center gap-2 h-9 px-4 text-sm text-gray-400 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+    {{{icon "search" class="w-4 h-4"}}}
+    <span>{{t "header.searchCommand"}}</span>
+    <kbd class="ml-1 text-xs bg-white border border-gray-200 rounded px-1.5 py-0.5 font-mono text-gray-400">⌘ K</kbd>
+  </button>
+
+  <div class="flex items-center gap-2">
+
+    {{!-- Notifications --}}
+    <button type="button" class="relative w-9 h-9 flex items-center justify-center rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors">
+      <span class="text-gray-500">{{{icon "bell" class="w-5 h-5"}}}</span>
+      <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+    </button>
+
+    {{!-- User menu --}}
+    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+      <button
+        type="button"
+        @click="open = !open"
+        class="flex items-center gap-3 h-9 px-2 rounded-lg hover:bg-gray-100 transition-colors">
+        <div class="text-sm text-right leading-tight">
+          <p class="font-medium text-gray-900">{{user.name}}</p>
+          <p class="text-xs text-gray-400">{{#if user.company}}{{user.company}}{{else}}Avixa{{/if}}</p>
+        </div>
+        <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-semibold">
+          {{initial user.name}}
+        </div>
+        <span class="text-gray-400">{{{icon "chevron-down" class="w-4 h-4"}}}</span>
+      </button>
+
+      <div x-show="open" x-cloak x-transition class="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg overflow-hidden z-50">
+        <a href="/settings" class="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+          {{{icon "settings" class="w-4 h-4"}}}
+          {{t "navigation.settings"}}
+        </a>
+        <div class="border-t border-gray-100"></div>
+        <form method="POST" action="/logout" class="m-0">
+          <button type="submit" class="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+            {{{icon "log-out" class="w-4 h-4"}}}
+            {{t "common.logout"}}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

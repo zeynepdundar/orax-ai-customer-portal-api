@@ -1,0 +1,38 @@
+{{!--
+  MetricCard partial — mirrors src/components/ui/MetricCard.tsx
+  Params:
+    title       label above the value
+    value       big number/text
+    icon        lucide-style icon name (e.g. "package")
+    variant     blue | green | orange | purple | yellow (controls icon chip color)
+    action      (optional) name of a partial to render in the bottom-right
+                e.g. action="ui/ask-ai-button"
+--}}
+<div class="p-5 bg-white shadow-sm border border-gray-100 rounded-xl">
+  <div class="flex items-start justify-between">
+    <div>
+      <p class="text-xs text-gray-500 mb-2">{{title}}</p>
+      <p class="text-2xl font-semibold text-gray-900">{{value}}</p>
+    </div>
+    <div class="p-2.5 rounded-lg
+      {{#if (eq variant "green")}}bg-green-50{{/if}}
+      {{#if (eq variant "orange")}}bg-orange-50{{/if}}
+      {{#if (eq variant "purple")}}bg-purple-50{{/if}}
+      {{#if (eq variant "yellow")}}bg-yellow-50{{/if}}
+      {{#if (or (eq variant "blue") (not variant))}}bg-blue-50{{/if}}">
+      <span class="
+        {{#if (eq variant "green")}}text-green-600{{/if}}
+        {{#if (eq variant "orange")}}text-orange-600{{/if}}
+        {{#if (eq variant "purple")}}text-purple-600{{/if}}
+        {{#if (eq variant "yellow")}}text-yellow-600{{/if}}
+        {{#if (or (eq variant "blue") (not variant))}}text-blue-600{{/if}}">
+        {{{icon icon class="w-5 h-5"}}}
+      </span>
+    </div>
+  </div>
+  {{#if showAction}}
+    <div class="mt-4 flex justify-end">
+      {{> ui/ask-ai-button context=actionContext}}
+    </div>
+  {{/if}}
+</div>

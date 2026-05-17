@@ -1,0 +1,21 @@
+{{!--
+  SectionHeader — mirrors src/components/ui/SectionHeader.tsx
+  Renders an h2 + description on the left and a row of action buttons on the right.
+  Params:
+    title         heading
+    description   optional sub-text
+    actions       array of {label, variant, icon, href, onClick}
+--}}
+<div class="flex items-start justify-between gap-4">
+  <div>
+    <h2 class="text-2xl font-semibold text-gray-900">{{title}}</h2>
+    {{#if description}}<p class="text-sm text-gray-500 mt-1">{{description}}</p>{{/if}}
+  </div>
+  {{#if actions}}
+    <div class="flex items-center gap-2">
+      {{#each actions}}
+        {{> ui/button label=this.label variant=(or this.variant "primary") href=this.href onClick=this.onClick iconBefore=this.icon}}
+      {{/each}}
+    </div>
+  {{/if}}
+</div>

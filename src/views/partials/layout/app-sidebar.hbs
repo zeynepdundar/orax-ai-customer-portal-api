@@ -1,0 +1,45 @@
+{{!--
+  App sidebar — mirrors src/components/layout/AppSidebar.tsx
+  Active-state is computed server-side from `currentPath` (set in middleware/locals.ts).
+  Collapse/expand toggle uses Alpine.js and persists in localStorage.
+
+  Expects `menuItems` (array of {path, label, icon}) in the rendering context —
+  app.hbs builds this list from translation keys before rendering.
+--}}
+<div
+  x-data="{ open: $persist(true).as('orax-sidebar-open') }"
+  :class="open ? 'w-64' : 'w-16'"
+  class="bg-white flex flex-col shadow-[1px_0_0_0_#f0f2f5] transition-all duration-300 ease-in-out shrink-0">
+
+  {{!-- Logo + toggle --}}
+  <div class="h-16 flex items-center justify-between px-4 border-b border-gray-100">
+    <img x-show="open" x-cloak src="/branding/logo/logo.svg" alt="OraxAI" class="h-6" />
+    <button
+      type="button"
+      @click="open = !open"
+      :class="open ? '' : 'mx-auto'"
+      class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-900 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+      <span x-show="open" x-cloak>{{{icon "panel-left" class="w-4 h-4"}}}</span>
+      <span x-show="!open" x-cloak>{{{icon "panel-right" class="w-4 h-4"}}}</span>
+    </button>
+  </div>
+
+  {{!-- Menu --}}
+  <nav class="flex-1 p-2.5 space-y-1 text-gray-900">
+    {{#each menuItems}}
+      <a
+        href="{{this.path}}"
+        title="{{this.label}}"
+        :class="open ? 'justify-start' : 'justify-center px-0'"
+        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all border-l-2
+          {{#if (isActive this.path ../currentPath)}}
+            bg-brand-50 text-brand-700 font-medium border-brand-500
+          {{else}}
+            border-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900
+          {{/if}}">
+        <span class="shrink-0">{{{icon this.icon class="w-4 h-4"}}}</span>
+        <span x-show="open" x-cloak>{{this.label}}</span>
+      </a>
+    {{/each}}
+  </nav>
+</div>

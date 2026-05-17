@@ -1,0 +1,24 @@
+{{!--
+  Shared <head> markup for all pages.
+  - Loads compiled Tailwind CSS
+  - Loads Alpine.js + persist plugin (replaces React's useState for sidebar etc.)
+  - Optional pageScripts list of additional scripts per page (e.g. Chart.js on Reports)
+  - `title` lets pages set <title> — defaults to brand name
+--}}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{{#if title}}{{title}} · {{/if}}OraxAI | Customer Portal</title>
+<meta name="description" content="AI-powered warehouse management and customer operations platform." />
+<link rel="icon" href="/favicon.ico" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+<link rel="stylesheet" href="/css/output.css" />
+
+{{!-- Alpine.js + persist plugin (CDN — keeps the no-build approach for client JS) --}}
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<style>
+  [x-cloak] { display: none !important; }
+</style>

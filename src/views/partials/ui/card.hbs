@@ -1,0 +1,14 @@
+{{!--
+  Card partial — mirrors src/components/ui/Card.tsx (Card root).
+  Always used as a block partial so consumers can put any content inside:
+    {{#> ui/card padding="p-5"}}
+      …
+    {{/ui/card}}
+
+  Params:
+    padding     Tailwind padding utility (default "p-5")
+    extraClass  Extra classes (e.g. "bg-gradient-to-r from-blue-50 ...")
+--}}
+<div class="bg-white shadow-sm border border-gray-100 rounded-xl {{#if padding}}{{padding}}{{else}}p-5{{/if}} {{extraClass}}">
+  {{> @partial-block}}
+</div>

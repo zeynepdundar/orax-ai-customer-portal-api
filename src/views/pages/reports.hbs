@@ -1,0 +1,209 @@
+{{!--
+  Reports page — mirrors src/app/(app)/reports/page.tsx.
+  Charts render via Chart.js (loaded via pageScripts in the route handler).
+  Speech-recognition logic lives in inline Alpine.js (kept lightweight).
+--}}
+<div class="p-8 space-y-6"
+  x-data="reportsPage({
+    chartData: {{{json chartData}}},
+    i18n: {
+      stockTrend: {{{json labels.stockTrend}}},
+      orderVolume: {{{json labels.orderVolume}}},
+      askEmpty: 'Please enter a question',
+      listening: 'Listening...',
+      speechError: 'Speech recognition error',
+      speechUnsupported: 'Your browser does not support speech recognition',
+    }
+  })">
+
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-semibold text-gray-900">{{pageTitle}}</h2>
+      <p class="text-sm text-gray-500 mt-1">{{pageSubtitle}}</p>
+    </div>
+    <div class="w-40">
+      {{> ui/select-box label=labels.language options=localeOptions extraClass="border-gray-200"}}
+    </div>
+  </div>
+
+  {{!-- Ask AI card --}}
+  {{#> ui/card padding="p-5" extraClass="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200"}}
+    <div class="flex items-center gap-2 mb-3">
+      <span class="text-2xl">🤖</span>
+      <h3 class="text-sm font-semibold text-gray-900">{{labels.askAssistant}}</h3>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="flex-1 relative">
+        <input
+          x-model="query"
+          @keydown.enter="askAI()"
+          type="text"
+          placeholder="{{labels.askPlaceholder}}"
+          class="w-full h-9 px-3 pr-12 py-1 text-sm rounded-lg border bg-white border-gray-200 focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:border-brand-500 outline-none transition" />
+        <button
+          type="button"
+          @click="voiceInput()"
+          :disabled="listening"
+          :class="listening ? 'text-red-600 animate-pulse' : 'text-gray-400 hover:text-blue-600'"
+          class="absolute right-1 top-1/2 -translate-y-1/2 inline-flex items-center justify-center h-8 px-3 text-sm rounded-lg">
+          {{{icon "mic" class="w-4 h-4"}}}
+        </button>
+      </div>
+      <button type="button" @click="askAI()" class="inline-flex items-center h-9 px-4 text-sm rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium">
+        {{{icon "send" class="w-4 h-4 mr-2"}}}
+        {{labels.ask}}
+      </button>
+    </div>
+    <p x-show="notice" x-cloak class="text-xs text-blue-700 mt-3" x-text="notice"></p>
+  {{/ui/card}}
+
+  {{!-- AI response card --}}
+  <div x-show="showResponse" x-cloak>
+    {{#> ui/card padding="p-6" extraClass="bg-white border-2 border-blue-300 shadow-lg"}}
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <span class="text-3xl">🤖</span>
+          <h3 class="text-lg font-semibold text-gray-900">{{labels.assistantResponse}}</h3>
+        </div>
+        <button type="button" @click="showResponse = false" class="inline-flex items-center h-8 px-3 text-sm rounded-lg text-gray-600 hover:bg-gray-100">
+          ✕
+        </button>
+      </div>
+      <div class="whitespace-pre-line text-sm text-gray-700 leading-relaxed" x-text="response"></div>
+      <div class="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+        <span class="text-xs text-gray-500">{{labels.demoHint}}</span>
+        <button type="button" @click="query=''; showResponse=false" class="inline-flex items-center h-8 px-3 text-sm rounded-lg bg-white border border-gray-200 text-gray-900 hover:bg-gray-50">{{labels.newQuestion}}</button>
+      </div>
+    {{/ui/card}}
+  </div>
+
+  {{!-- Filters --}}
+  {{#> ui/card padding="p-5"}}
+    <h3 class="text-sm font-semibold text-gray-900 mb-4">{{labels.filters}}</h3>
+    <form method="GET" action="/reports">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label class="text-xs text-gray-600">{{labels.dateFrom}}</label>
+          <input type="date" name="dateFrom" class="mt-1.5 w-full h-9 px-3 text-sm rounded-lg border bg-white border-gray-200" />
+        </div>
+        <div>
+          <label class="text-xs text-gray-600">{{labels.dateTo}}</label>
+          <input type="date" name="dateTo" class="mt-1.5 w-full h-9 px-3 text-sm rounded-lg border bg-white border-gray-200" />
+        </div>
+        <div>
+          {{> ui/select-box name="product" label=labels.product options=productOptions extraClass="mt-1.5"}}
+        </div>
+        <div>
+          {{> ui/select-box name="orderType" label=labels.orderType options=orderTypeOptions extraClass="mt-1.5"}}
+        </div>
+      </div>
+      <div class="flex items-center gap-3 mt-5 pt-5 border-t border-gray-200">
+        <button type="button" class="inline-flex items-center gap-2 h-8 px-3 text-sm rounded-lg bg-white border border-gray-200 text-gray-900 hover:bg-gray-50">
+          {{{icon "download" class="w-4 h-4"}}}
+          {{labels.exportExcel}}
+        </button>
+        <button type="button" class="inline-flex items-center gap-2 h-8 px-3 text-sm rounded-lg bg-white border border-gray-200 text-gray-900 hover:bg-gray-50">
+          {{{icon "download" class="w-4 h-4"}}}
+          {{labels.exportPDF}}
+        </button>
+      </div>
+    </form>
+  {{/ui/card}}
+
+  {{!-- Charts --}}
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    {{#> ui/card padding="p-5"}}
+      <h3 class="text-sm font-semibold text-gray-900 mb-4">{{labels.stockTrend}}</h3>
+      <canvas x-ref="lineChart" id="reports-line-chart" height="200"></canvas>
+    {{/ui/card}}
+
+    {{#> ui/card padding="p-5"}}
+      <h3 class="text-sm font-semibold text-gray-900 mb-4">{{labels.orderVolume}}</h3>
+      <canvas x-ref="barChart" id="reports-bar-chart" height="200"></canvas>
+    {{/ui/card}}
+  </div>
+
+  {{!-- Summary cards --}}
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    {{#each summaryData}}
+      {{> ui/summary-card-item label=this.label value=this.value icon=this.icon iconColor=this.iconColor iconBgColor=this.iconBg}}
+    {{/each}}
+  </div>
+</div>
+
+<script>
+  // Alpine component that owns the Reports page's interactive bits.
+  // (Defined inline because it's only needed on this page; nothing else
+  //  on the site loads Chart.js or needs speech recognition.)
+  function reportsPage({ chartData, i18n }) {
+    return {
+      query: "",
+      listening: false,
+      notice: "",
+      response: "",
+      showResponse: false,
+      lineChart: null,
+      barChart: null,
+      init() {
+        // Wait for Chart.js (loaded via pageScripts) to be on window.
+        const tryInit = () => {
+          if (typeof window.Chart === "undefined") {
+            return setTimeout(tryInit, 50);
+          }
+          const baseOptions = {
+            responsive: true,
+            scales: {
+              x: { ticks: { color: "#6b7280" } },
+              y: { ticks: { color: "#6b7280" } },
+            },
+            plugins: {
+              tooltip: { mode: "index", intersect: false },
+              legend: { display: true, position: "top" },
+            },
+          };
+          this.lineChart = new window.Chart(this.$refs.lineChart, {
+            type: "line",
+            data: chartData.line,
+            options: baseOptions,
+          });
+          this.barChart = new window.Chart(this.$refs.barChart, {
+            type: "bar",
+            data: chartData.bar,
+            options: baseOptions,
+          });
+        };
+        tryInit();
+      },
+      askAI() {
+        if (!this.query.trim()) {
+          this.notice = i18n.askEmpty;
+          return;
+        }
+        this.response = "📊 Your Analysis is Ready\n\nQuestion: " + this.query + "\n\n" +
+          "Hello! I analyzed your OraxAI reporting system.\n\n" +
+          "- Stock trend increased over the last week.\n" +
+          "- Inbound and outbound flow is balanced.\n" +
+          "- Top moving SKUs should be monitored for replenishment.\n\n" +
+          "Would you like another analysis?";
+        this.showResponse = true;
+        this.notice = "";
+      },
+      voiceInput() {
+        const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!Recognition) {
+          this.notice = i18n.speechUnsupported;
+          return;
+        }
+        const r = new Recognition();
+        r.lang = "en-US";
+        r.continuous = false;
+        r.interimResults = false;
+        r.onstart = () => { this.listening = true; this.notice = i18n.listening; };
+        r.onresult = (e) => { this.query = e.results[0]?.[0]?.transcript || ""; this.listening = false; };
+        r.onerror = () => { this.notice = i18n.speechError; this.listening = false; };
+        r.onend = () => { this.listening = false; };
+        r.start();
+      },
+    };
+  }
+</script>

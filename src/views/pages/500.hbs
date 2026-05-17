@@ -1,0 +1,12 @@
+{{!-- Generic error page --}}
+<div class="p-8 flex items-center justify-center min-h-[60vh]">
+  <div class="text-center max-w-md">
+    <p class="text-xs uppercase tracking-widest text-gray-400 mb-2">500</p>
+    <h1 class="text-3xl font-semibold text-gray-900 mb-3">Something went wrong</h1>
+    <p class="text-sm text-gray-500 mb-6">An unexpected error occurred. Please try again.</p>
+    {{#if error}}
+      <pre class="text-left bg-gray-100 text-xs text-gray-700 p-3 rounded-lg overflow-x-auto mb-6">{{error}}</pre>
+    {{/if}}
+    <a href="/dashboard" class="inline-flex items-center justify-center h-9 px-4 text-sm rounded-lg bg-brand-500 hover:bg-brand-600 text-white font-medium">Back to dashboard</a>
+  </div>
+</div>

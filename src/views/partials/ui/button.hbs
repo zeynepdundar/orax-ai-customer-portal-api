@@ -1,0 +1,42 @@
+{{!--
+  Button partial — mirrors src/components/ui/Button.tsx
+  Usage:
+    {{> ui/button label="Save" variant="primary" size="md" extraClass="ml-2"}}
+    {{#> ui/button variant="outline"}}{{{icon "plus" class="w-4 h-4 mr-2"}}}New{{/ui/button}}
+
+  Params:
+    label      string (optional — falls back to block children)
+    variant    primary | secondary | success | outline | ghost
+    size       sm | md | lg
+    type       button | submit (default "button")
+    onClick    JS expression for onclick="..."  (rare — prefer Alpine)
+    href       if set, renders an <a> instead of <button>
+    extraClass appended utility classes
+    iconBefore icon name (rendered with currentColor before the label)
+    iconAfter  icon name (rendered after the label)
+--}}
+{{#*inline "btn-classes"}}
+  inline-flex items-center justify-center rounded-lg font-medium transition focus:outline-none disabled:opacity-50 disabled:pointer-events-none
+  {{#if (eq variant "primary")}}bg-brand-500 text-white hover:bg-brand-600 shadow-sm{{/if}}
+  {{#if (eq variant "secondary")}}bg-gray-100 text-gray-700 hover:bg-gray-200{{/if}}
+  {{#if (eq variant "success")}}bg-success-600 text-white hover:bg-success-700 shadow-sm{{/if}}
+  {{#if (eq variant "outline")}}bg-white border border-gray-200 text-gray-900 hover:bg-gray-50 hover:border-gray-300 shadow-sm{{/if}}
+  {{#if (eq variant "ghost")}}text-gray-600 hover:bg-gray-100{{/if}}
+  {{#if (eq size "sm")}}h-8 px-3 text-sm{{else}}{{#if (eq size "lg")}}h-10 px-6 text-base{{else}}h-9 px-4 text-sm{{/if}}{{/if}}
+  {{extraClass}}
+{{/inline}}
+{{#if href}}
+  <a href="{{href}}" class="{{> btn-classes}}"
+    {{#if onClick}}onclick="{{onClick}}"{{/if}}>
+    {{#if iconBefore}}{{{icon iconBefore class="w-4 h-4 mr-2"}}}{{/if}}
+    {{#if label}}{{label}}{{else}}{{> @partial-block}}{{/if}}
+    {{#if iconAfter}}{{{icon iconAfter class="w-4 h-4 ml-2"}}}{{/if}}
+  </a>
+{{else}}
+  <button type="{{#if type}}{{type}}{{else}}button{{/if}}" class="{{> btn-classes}}"
+    {{#if onClick}}onclick="{{onClick}}"{{/if}}>
+    {{#if iconBefore}}{{{icon iconBefore class="w-4 h-4 mr-2"}}}{{/if}}
+    {{#if label}}{{label}}{{else}}{{> @partial-block}}{{/if}}
+    {{#if iconAfter}}{{{icon iconAfter class="w-4 h-4 ml-2"}}}{{/if}}
+  </button>
+{{/if}}

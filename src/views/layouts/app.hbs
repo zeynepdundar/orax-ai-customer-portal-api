@@ -1,0 +1,30 @@
+{{!--
+  Default layout: the shell used by every authenticated page.
+  Equivalent to src/app/(app)/layout.tsx in the Next.js project.
+--}}
+<!DOCTYPE html>
+<html lang="{{locale}}" class="h-full antialiased">
+<head>
+  {{> head}}
+</head>
+<body class="min-h-full">
+  <div class="flex h-screen">
+    {{> layout/app-sidebar menuItems=menuItems currentPath=currentPath}}
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+      {{> layout/app-header}}
+
+      <div class="flex-1 overflow-auto">
+        {{{body}}}
+      </div>
+    </div>
+  </div>
+
+  {{#each pageScripts}}
+    <script src="{{this}}" defer></script>
+  {{/each}}
+  {{#if inlineScript}}
+    <script>{{{inlineScript}}}</script>
+  {{/if}}
+</body>
+</html>

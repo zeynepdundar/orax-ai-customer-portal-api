@@ -1,0 +1,32 @@
+{{!--
+  Input partial — mirrors src/components/ui/Input.tsx
+  Params:
+    name        form field name
+    type        input type (default "text")
+    label       optional label above
+    placeholder
+    value       prefilled value
+    hint        helper text (shown when no error)
+    error       error text (red)
+    extraClass  extra Tailwind classes on the <input>
+    id          DOM id (auto-generated from name when omitted)
+    xModel      Alpine x-model directive (e.g. "form.email")
+--}}
+<div class="space-y-1.5 w-full">
+  {{#if label}}
+    <label {{#if id}}for="{{id}}"{{else}}{{#if name}}for="{{name}}"{{/if}}{{/if}} class="text-sm font-medium text-gray-700">{{label}}</label>
+  {{/if}}
+  <input
+    {{#if id}}id="{{id}}"{{else}}{{#if name}}id="{{name}}"{{/if}}{{/if}}
+    {{#if name}}name="{{name}}"{{/if}}
+    type="{{#if type}}{{type}}{{else}}text{{/if}}"
+    {{#if placeholder}}placeholder="{{placeholder}}"{{/if}}
+    {{#if value}}value="{{value}}"{{/if}}
+    {{#if xModel}}x-model="{{xModel}}"{{/if}}
+    {{#if required}}required{{/if}}
+    {{#if disabled}}disabled{{/if}}
+    class="w-full h-9 px-3 py-1 text-sm rounded-lg border outline-none transition bg-white border-gray-200 placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-brand-500/20 focus-visible:border-brand-500 disabled:opacity-50 disabled:cursor-not-allowed{{#if error}} border-red-500 focus-visible:ring-red-500 focus-visible:border-red-500{{/if}} {{extraClass}}"
+  />
+  {{#if hint}}{{#unless error}}<p class="text-xs text-gray-500">{{hint}}</p>{{/unless}}{{/if}}
+  {{#if error}}<p class="text-xs text-red-500">{{error}}</p>{{/if}}
+</div>

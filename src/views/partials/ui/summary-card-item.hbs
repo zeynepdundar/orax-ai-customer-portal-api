@@ -1,0 +1,18 @@
+{{!--
+  SummaryCardItem — mirrors src/components/ui/SummaryCardItem.tsx
+  Params:
+    label, value
+    icon         icon name
+    iconColor    text-color util (default "text-gray-500")
+    iconBgColor  bg-color util (default "bg-gray-200")
+    valueColor   text-color util for the value (default "text-gray-900")
+--}}
+<div class="p-4 bg-white border border-gray-200 rounded-lg text-center">
+  <div class="flex items-center justify-center gap-3 mb-4">
+    <p class="text-sm font-medium text-gray-600">{{label}}</p>
+    <div class="w-9 h-9 flex items-center justify-center rounded-md {{#if iconBgColor}}{{iconBgColor}}{{else}}bg-gray-200{{/if}}">
+      <span class="{{#if iconColor}}{{iconColor}}{{else}}text-gray-500{{/if}}">{{{icon icon class="w-5 h-5"}}}</span>
+    </div>
+  </div>
+  <p class="text-2xl font-semibold {{#if valueColor}}{{valueColor}}{{else}}text-gray-900{{/if}}">{{value}}</p>
+</div>

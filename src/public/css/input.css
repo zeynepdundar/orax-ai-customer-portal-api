@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@source "../../views/**/*.hbs";
+@source "../../**/*.ts";
+
+@theme {
+  --color-app-background: #f7f8fa;
+
+  /* ── Brand (#458bc9) ── */
+  --color-brand-50:  #eef5fb;
+  --color-brand-100: #d5e7f5;
+  --color-brand-500: #458bc9;
+  --color-brand-600: #3876b0;
+  --color-brand-700: #458bc9;
+  --color-brand-900: #133149;
+  --color-brand-950: #0a1e2e;
+
+  /* ── Success (green) ── */
+  --color-success-50:  #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+
+  /* ── Warning (amber) ── */
+  --color-warning-50:  #fffbeb;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-app-background);
+  }
+}

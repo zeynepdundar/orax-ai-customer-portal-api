@@ -1,23 +1,17 @@
-import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
-
 dotenv.config();
 
-const app = express();
+import { createApp } from "./app";
 
-app.use(cors());
-app.use(express.json());
+const PORT = Number(process.env.PORT) || 4000;
 
-app.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
-    service: "Orax AI Customer Portal API",
+createApp()
+  .then((app) => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Orax AI Customer Portal running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to start server:", err);
+    process.exit(1);
   });
-});
-
-const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
