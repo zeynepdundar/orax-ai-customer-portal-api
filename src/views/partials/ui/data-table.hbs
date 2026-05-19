@@ -13,7 +13,7 @@
   rowsHtml here. The partial accepts either rowsHtml OR data+columns with simple
   string fields — see the page templates for examples.
 --}}
-<div class="overflow-x-auto bg-white shadow-sm border border-gray-100 rounded-xl">
+<div class="{{#unless allowOverflow}}overflow-x-auto{{/unless}} bg-white shadow-sm border border-gray-100 rounded-xl">
   <table class="w-full">
     <thead class="border-b border-gray-100 bg-gray-50/60">
       <tr>

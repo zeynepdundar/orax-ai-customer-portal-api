@@ -4,3 +4,7 @@ dist
 coverage
 .DS_Store
 src/public/css/output.css
+
+# Prisma
+prisma/migrations/dev.db
+prisma/migrations/dev.db-journal

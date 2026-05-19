@@ -9,7 +9,11 @@
     "build": "npm run css:build && tsc && npm run copy:views",
     "copy:views": "node scripts/copy-views.js",
     "css:build": "tailwindcss -i ./src/public/css/input.css -o ./src/public/css/output.css --minify",
-    "css:watch": "tailwindcss -i ./src/public/css/input.css -o ./src/public/css/output.css --watch"
+    "css:watch": "tailwindcss -i ./src/public/css/input.css -o ./src/public/css/output.css --watch",
+    "prisma:generate": "prisma generate",
+    "prisma:pull": "prisma db pull",
+    "prisma:studio": "prisma studio",
+    "db:test": "ts-node scripts/db-test.ts"
   },
   "keywords": [
     "express",
@@ -21,6 +25,8 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "connect-pg-simple": "^10.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -33,6 +39,7 @@
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.0",
+    "@types/connect-pg-simple": "^7.0.3",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
@@ -41,6 +48,7 @@
     "@types/node": "^25.7.0",
     "concurrently": "^9.2.1",
     "nodemon": "^3.1.14",
+    "prisma": "^5.22.0",
     "tailwindcss": "^4.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"

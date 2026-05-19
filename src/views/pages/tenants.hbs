@@ -1,0 +1,26 @@
+{{!--
+  Tenants page — first page wired to a real Postgres source via Prisma.
+  Renders whatever columns come back from `SELECT * FROM portal.tenants`.
+--}}
+<div class="p-8 space-y-6">
+  {{> ui/section-header title=pageTitle description=pageDescription}}
+
+  {{#if errorMessage}}
+    {{#> ui/card padding="p-5" extraClass="border-red-200 bg-red-50"}}
+      <div class="flex items-start gap-3">
+        <span class="text-red-600 mt-0.5">{{{icon "alert-triangle" class="w-5 h-5"}}}</span>
+        <div>
+          <p class="text-sm font-semibold text-red-700">Database query failed</p>
+          <pre class="text-xs text-red-700 whitespace-pre-wrap mt-2">{{errorMessage}}</pre>
+          <p class="text-xs text-red-700 mt-3">
+            Check <code class="bg-red-100 px-1 py-0.5 rounded">DATABASE_URL</code> in <code class="bg-red-100 px-1 py-0.5 rounded">.env</code>,
+            that Postgres is reachable, and that <code class="bg-red-100 px-1 py-0.5 rounded">portal.tenants</code> exists.
+          </p>
+        </div>
+      </div>
+    {{/ui/card}}
+  {{else}}
+    <p class="text-sm text-gray-500">Showing {{count}} row(s).</p>
+    {{> ui/data-table columns=columns rowsHtml=rowsHtml}}
+  {{/if}}
+</div>

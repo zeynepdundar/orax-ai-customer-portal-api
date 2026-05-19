@@ -45,4 +45,17 @@ export const ICONS: Record<string, string> = {
   "trash-2": `<svg ${base}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`,
   construction: `<svg ${base}><rect x="2" y="6" width="20" height="8" rx="1"/><path d="M17 14v7"/><path d="M7 14v7"/><path d="M17 3v3"/><path d="M7 3v3"/><path d="M10 14 2.3 6.3"/><path d="m14 6 7.7 7.7"/><path d="m8 6 8 8"/></svg>`,
   "x-mark": `<svg ${base}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  "more-vertical": `<svg ${base}><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>`,
+  "more-horizontal": `<svg ${base}><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`,
 };
+
+/**
+ * Returns an icon as an SVG string with the given Tailwind classes injected
+ * into the root <svg> tag. Useful when building markup outside of Handlebars
+ * (e.g. when a route handler renders a row as raw HTML).
+ */
+export function iconSvg(name: string, klass = "w-4 h-4"): string {
+  const raw = ICONS[name];
+  if (!raw) return `<!-- icon "${name}" not found -->`;
+  return raw.replace("<svg", `<svg class="${klass}"`);
+}

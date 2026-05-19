@@ -1,4 +1,7 @@
-{{!-- Customers page — mirrors src/app/(app)/customers/page.tsx --}}
+{{!--
+  Customers page — backed by `portal.customers` via Prisma raw SQL.
+  Renders three user-facing columns: Customer Code, Customer Name, Actions.
+--}}
 <div class="p-8 space-y-6">
   <div class="flex items-start justify-between gap-4">
     <div>
@@ -11,11 +14,53 @@
     </div>
   </div>
 
-  {{#> ui/card padding="p-5"}}
-    <form method="GET" action="/customers">
-      {{> ui/search-input name="search" label=searchLabel placeholder=searchPlaceholder value=search}}
-    </form>
-  {{/ui/card}}
+  {{#if errorMessage}}
+    {{#> ui/card padding="p-5" extraClass="border-red-200 bg-red-50"}}
+      <div class="flex items-start gap-3">
+        <span class="text-red-600 mt-0.5">{{{icon "alert-triangle" class="w-5 h-5"}}}</span>
+        <div>
+          <p class="text-sm font-semibold text-red-700">Database query failed</p>
+          <pre class="text-xs text-red-700 whitespace-pre-wrap mt-2">{{errorMessage}}</pre>
+          <p class="text-xs text-red-700 mt-3">
+            Check <code class="bg-red-100 px-1 py-0.5 rounded">DATABASE_URL</code> in <code class="bg-red-100 px-1 py-0.5 rounded">.env</code>,
+            that Postgres is reachable, and that <code class="bg-red-100 px-1 py-0.5 rounded">portal.customers</code> exists.
+          </p>
+        </div>
+      </div>
+    {{/ui/card}}
+  {{else}}
+    {{#> ui/card padding="p-5"}}
+      <form method="GET" action="/customers">
+        {{> ui/search-input name="search" label=searchLabel placeholder=searchPlaceholder value=search}}
+      </form>
+    {{/ui/card}}
 
-  {{> ui/data-table columns=columns rowsHtml=rowsHtml}}
+    {{#unless detected}}
+      {{#if availableColumns.length}}
+        {{#> ui/card padding="p-5" extraClass="border-yellow-200 bg-yellow-50"}}
+          <div class="flex items-start gap-3">
+            <span class="text-yellow-700 mt-0.5">{{{icon "alert-triangle" class="w-5 h-5"}}}</span>
+            <div class="text-sm text-yellow-900">
+              <p class="font-semibold">Couldn't auto-map customer code / name columns.</p>
+              <p class="text-xs mt-2">
+                Detected columns in <code class="bg-yellow-100 px-1 py-0.5 rounded">portal.customers</code>:
+                <code class="bg-yellow-100 px-1 py-0.5 rounded">{{#each availableColumns}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</code>
+              </p>
+              <p class="text-xs mt-1">
+                Edit <code class="bg-yellow-100 px-1 py-0.5 rounded">CODE_FIELDS</code> / <code class="bg-yellow-100 px-1 py-0.5 rounded">NAME_FIELDS</code> in <code class="bg-yellow-100 px-1 py-0.5 rounded">src/routes/customers.ts</code> to include the right names.
+              </p>
+            </div>
+          </div>
+        {{/ui/card}}
+      {{/if}}
+    {{/unless}}
+
+    <p class="text-sm text-gray-500">Showing {{count}} row(s).</p>
+
+    {{!--
+      allowOverflow=true so the row-level Alpine dropdowns aren't clipped at
+      the bottom edge of the table.
+    --}}
+    {{> ui/data-table columns=columns rowsHtml=rowsHtml allowOverflow=true}}
+  {{/if}}
 </div>

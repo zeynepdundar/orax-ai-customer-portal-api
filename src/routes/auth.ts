@@ -16,8 +16,7 @@ router.post("/login", (req, res) => {
     name: "Ahmet Yılmaz",
     email: req.body?.email || "ahmet@avixa.com",
   };
-  const next = typeof req.query.next === "string" ? req.query.next : "/dashboard";
-  res.redirect(next);
+  res.redirect("/dashboard");
 });
 
 router.post("/logout", (req, res) => {

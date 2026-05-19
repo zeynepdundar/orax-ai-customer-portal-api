@@ -20,6 +20,7 @@ export function buildMenuItems(req: Request): MenuItem[] {
     { path: "/reports", label: t("navigation.reports"), icon: "bar-chart-3" },
     { path: "/materials", label: t("navigation.materials"), icon: "package" },
     { path: "/customers", label: t("navigation.customers"), icon: "users" },
+    { path: "/tenants", label: "Tenants", icon: "users" },
     // Settings is hidden from the sidebar (matches the Next.js comment-out)
     // { path: "/settings", label: t("navigation.settings"), icon: "settings" },
   ];

@@ -3,6 +3,7 @@ import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
 import i18nextMiddleware from "i18next-http-middleware";
 
 import { configureHandlebars } from "./config/handlebars";
@@ -19,7 +20,9 @@ import outboundRouter from "./routes/outbound-orders";
 import reportsRouter from "./routes/reports";
 import materialsRouter from "./routes/materials";
 import customersRouter from "./routes/customers";
+import tenantsRouter from "./routes/tenants";
 import settingsRouter from "./routes/settings";
+import debugRouter from "./routes/debug";
 
 declare module "express-session" {
   interface SessionData {
@@ -43,15 +46,35 @@ export async function createApp(): Promise<Application> {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
 
+  // Persist sessions in Postgres when DATABASE_URL is available so dev restarts
+  // (and prod deploys) don't sign everybody out. Falls back to in-memory store
+  // if Postgres isn't configured yet — useful for first-run / smoke tests.
+  let sessionStore: session.Store | undefined;
+  if (process.env.DATABASE_URL) {
+    const PgStore = connectPgSimple(session);
+    sessionStore = new PgStore({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+      tableName: "session",
+    });
+  } else {
+    console.warn(
+      "⚠ DATABASE_URL not set — sessions will live in memory and disappear on restart."
+    );
+  }
+
   app.use(
     session({
+      ...(sessionStore ? { store: sessionStore } : {}),
       secret: process.env.SESSION_SECRET || "orax-dev-secret",
       resave: false,
       saveUninitialized: false,
+      rolling: true, // refreshes maxAge on every request so active users stay logged in
       cookie: {
         httpOnly: true,
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       },
     })
   );
@@ -77,6 +100,8 @@ export async function createApp(): Promise<Application> {
   app.use("/materials", materialsRouter);
   app.use("/customers", customersRouter);
   app.use("/settings", settingsRouter);
+  app.use("/tenants", tenantsRouter);
+  app.use("/debug", debugRouter);
 
   // Healthcheck
   app.get("/health", (_req, res) => {
