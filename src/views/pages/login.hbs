@@ -31,6 +31,12 @@
         <p class="text-xs text-brand-700">Demo mode — use any email and password</p>
       </div>
 
+      {{#if loginError}}
+        <div class="mb-5 px-4 py-3 rounded-lg border border-red-200 bg-red-50 text-xs text-red-700">
+          {{loginError}}
+        </div>
+      {{/if}}
+
       <form method="POST" action="/login" class="space-y-5">
         <div class="space-y-1.5">
           <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">Email</label>
@@ -52,6 +58,36 @@
             class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all"
           />
         </div>
+
+        {{!--
+          Dev-only tenant picker. The login is hardcoded for now (any
+          credentials work), so this lets you flip between firms to verify
+          /customers really filters by tenant. Server falls back to first
+          tenant if the dropdown is missing or empty.
+        --}}
+        {{#if tenantOptions.length}}
+          <div class="space-y-1.5">
+            <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Tenant (dev)
+            </label>
+            <select
+              name="tenantId"
+              class="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-900 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all">
+              {{#each tenantOptions}}
+                <option value="{{this.id}}" {{#if (eq this.id ../selectedTenantId)}}selected{{/if}}>{{this.name}}</option>
+              {{/each}}
+            </select>
+            <p class="text-[11px] text-gray-400 pt-1">
+              {{tenantOptions.length}} tenant(s) available. Pick one to act as that firm.
+            </p>
+          </div>
+        {{else}}
+          {{#if tenantLoadError}}
+            <div class="px-3 py-2 rounded-lg border border-yellow-200 bg-yellow-50 text-[11px] text-yellow-800">
+              Couldn't load tenants: {{tenantLoadError}}
+            </div>
+          {{/if}}
+        {{/if}}
 
         <div class="flex justify-end">
           <button type="button" class="text-xs text-gray-400 hover:text-brand-500 transition-colors">Forgot password?</button>

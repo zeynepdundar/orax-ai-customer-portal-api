@@ -23,7 +23,13 @@ export function attachLocals(req: Request, res: Response, next: NextFunction) {
   res.locals.currentPath = req.path;
   res.locals.fullPath = req.originalUrl;
   res.locals.isLoggedIn = !!req.session?.isLoggedIn;
-  res.locals.user = req.session?.user || { name: "Ahmet Yılmaz", company: "Avixa" };
+  const tenantName = req.session?.tenantName;
+  res.locals.user = {
+    ...(req.session?.user || { name: "Ahmet Yılmaz", email: "" }),
+    company: tenantName || "Avixa",
+  };
+  res.locals.tenantId = req.session?.tenantId;
+  res.locals.tenantName = tenantName;
   res.locals.sidebarOpen = req.session?.sidebarOpen !== false;
 
   next();

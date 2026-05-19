@@ -29,6 +29,9 @@ declare module "express-session" {
     isLoggedIn?: boolean;
     user?: { name: string; email: string };
     sidebarOpen?: boolean;
+    /** The tenant the logged-in firm is acting as. Set on login. */
+    tenantId?: string;
+    tenantName?: string;
   }
 }
 

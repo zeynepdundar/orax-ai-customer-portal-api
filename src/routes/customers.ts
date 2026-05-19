@@ -1,7 +1,7 @@
 import { Router, Request } from "express";
 import { requireAuth } from "../middleware/auth";
 import { buildMenuItems } from "../lib/menu";
-import { safeSelectAll } from "../lib/db";
+import { safeSelectAllWhere } from "../lib/db";
 import { iconSvg } from "../views/icons";
 
 const router = Router();
@@ -53,13 +53,25 @@ router.get("/", async (req, res) => {
 
   const search = ((req.query.search as string | undefined) || "").trim().toLowerCase();
 
+  const tenantId = req.session?.tenantId;
   let rows: Record<string, unknown>[] = [];
   let errorMessage: string | null = null;
 
-  try {
-    rows = await safeSelectAll("portal", "customers", 200);
-  } catch (err) {
-    errorMessage = err instanceof Error ? err.message : String(err);
+  if (!tenantId) {
+    errorMessage =
+      "No tenant in session. Sign out and sign in again so the portal can resolve which firm to query.";
+  } else {
+    try {
+      // Multi-tenant filter — only return customers belonging to the logged-in firm.
+      rows = await safeSelectAllWhere(
+        "portal",
+        "customers",
+        { tenant_id: tenantId },
+        200
+      );
+    } catch (err) {
+      errorMessage = err instanceof Error ? err.message : String(err);
+    }
   }
 
   // In-memory search across every column. Cheap because we limit to 200 rows.
