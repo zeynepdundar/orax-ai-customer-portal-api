@@ -30,9 +30,15 @@
       </span>
     </div>
   </div>
-  {{#if showAction}}
-    <div class="mt-4 flex justify-end">
-      {{> ui/ask-ai-button context=actionContext}}
-    </div>
+  {{!--
+    Ask AI button hidden until the feature is ready. Wrapped in {{#if false}}
+    so the markup is preserved but never renders. Flip to true to restore.
+  --}}
+  {{#if false}}
+    {{#if showAction}}
+      <div class="mt-4 flex justify-end">
+        {{> ui/ask-ai-button context=actionContext}}
+      </div>
+    {{/if}}
   {{/if}}
 </div>
