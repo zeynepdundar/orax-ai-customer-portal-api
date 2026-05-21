@@ -10,9 +10,17 @@
     </div>
     <div class="flex items-center gap-2">
       {{> ui/button label=exportLabel variant="outline" iconBefore="download"}}
-      {{> ui/button label=newCustomerLabel iconBefore="plus"}}
+      {{> ui/button label=newCustomerLabel iconBefore="plus" href="/customers/new"}}
     </div>
   </div>
+
+  {{#if flashMessage}}
+    {{!-- One-shot success notice after POST /customers/new --}}
+    <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-700 flex items-center gap-2">
+      <span class="text-green-600">{{{icon "check-circle-2" class="w-4 h-4"}}}</span>
+      {{flashMessage}}
+    </div>
+  {{/if}}
 
   {{#if errorMessage}}
     {{#> ui/card padding="p-5" extraClass="border-red-200 bg-red-50"}}

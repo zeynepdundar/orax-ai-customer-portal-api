@@ -53,6 +53,12 @@ router.get("/", async (req, res) => {
 
   const search = ((req.query.search as string | undefined) || "").trim().toLowerCase();
 
+  // One-shot flash message (e.g. "Customer created successfully") set by
+  // POST /customers/new — read it then immediately clear so it doesn't stick.
+  const sessionAny = req.session as unknown as { flash?: string };
+  const flashMessage = sessionAny?.flash || null;
+  if (sessionAny) sessionAny.flash = undefined;
+
   const tenantId = req.session?.tenantId;
   let rows: Record<string, unknown>[] = [];
   let errorMessage: string | null = null;
@@ -188,6 +194,7 @@ router.get("/", async (req, res) => {
     detected,
     detectedKeys: { id: idKey, code: codeKey, name: nameKey },
     availableColumns,
+    flashMessage,
   });
 });
 
@@ -199,5 +206,129 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
+/**
+ * Mock dataset that mirrors the React component's hardcoded values:
+ * 3 search results for the "Fetch from OraxAI" mode, and 2 existing
+ * customers used by the duplicate-GLN check. Once a real backend exists,
+ * replace these with actual lookups.
+ */
+const MOCK_SEARCH_RESULTS = [
+  { id: "1", name: "Selcuk Ecza Deposu", gln: "5412345678900" },
+  { id: "2", name: "Avixa A.Ş.", gln: "5498765432109" },
+  { id: "3", name: "Hedef Alliance", gln: "5401234567890" },
+];
+
+const MOCK_EXISTING_CUSTOMERS = [
+  {
+    gln: "5412345678900",
+    customerName: "Selcuk Ecza Deposu",
+    contactPerson: "Ahmet Yılmaz",
+    phone: "+90 212 555 0001",
+  },
+  {
+    gln: "5498765432109",
+    customerName: "Avixa A.Ş.",
+    contactPerson: "Mehmet Demir",
+    phone: "+90 216 555 0002",
+  },
+];
+
+/**
+ * GET /customers/new
+ *
+ * Renders the 3-mode create-customer form. All interactivity (mode tabs,
+ * GLN validation, drag-and-drop file uploader, duplicate modal) is handled
+ * client-side by Alpine.js using the data we embed in the script tag below.
+ */
+router.get("/new", (req, res) => {
+  const reqAny = req as Request & { t: (k: string) => string };
+  const t = reqAny.t;
+
+  res.render("pages/customers-new", {
+    title: t("customers.create.title"),
+    pageTitle: t("customers.create.title"),
+    pageSubtitle: t("customers.create.subtitle"),
+    menuItems: buildMenuItems(req),
+    mockSearchResults: MOCK_SEARCH_RESULTS,
+    mockExistingCustomers: MOCK_EXISTING_CUSTOMERS,
+    labels: {
+      fetchMode: t("customers.create.fetchMode"),
+      uploadMode: t("customers.create.uploadMode"),
+      manualMode: t("customers.create.manualMode"),
+      fetchDescription: t("customers.create.fetchDescription"),
+      searchPlaceholder: t("customers.create.searchPlaceholder"),
+      fetching: t("customers.create.fetching"),
+      fetchButton: t("customers.create.fetchButton"),
+      fetchSuccess: t("customers.create.fetchSuccess"),
+      selectCustomer: t("customers.create.selectCustomer"),
+      autoFetchedInfo: t("customers.create.autoFetchedInfo"),
+      contactInfo: t("customers.create.contactInfo"),
+      customerName: t("customers.create.customerName"),
+      customerNamePlaceholder: t("customers.create.customerNamePlaceholder"),
+      customerCode: t("customers.create.customerCode"),
+      customerCodePlaceholder: t("customers.create.customerCodePlaceholder"),
+      customerShortName: t("customers.create.customerShortName"),
+      customerShortNamePlaceholder: t("customers.create.customerShortNamePlaceholder"),
+      address: t("customers.create.address"),
+      addressPlaceholder: t("customers.create.addressPlaceholder"),
+      taxOffice: t("customers.create.taxOffice"),
+      taxOfficePlaceholder: t("customers.create.taxOfficePlaceholder"),
+      taxNumber: t("customers.create.taxNumber"),
+      taxNumberPlaceholder: t("customers.create.taxNumberPlaceholder"),
+      masterGln: t("customers.create.masterGln"),
+      masterGlnPlaceholder: t("customers.create.masterGlnPlaceholder"),
+      shipToGln: t("customers.create.shipToGln"),
+      shipToGlnPlaceholder: t("customers.create.shipToGlnPlaceholder"),
+      gln: t("customers.create.gln"),
+      contactPerson: t("customers.create.contactPerson"),
+      contactPersonPlaceholder: t("customers.create.contactPersonPlaceholder"),
+      phone: t("customers.create.phone"),
+      phonePlaceholder: t("customers.create.phonePlaceholder"),
+      email: t("customers.create.email"),
+      emailPlaceholder: t("customers.create.emailPlaceholder"),
+      basicInfo: t("customers.create.basicInfo"),
+      downloadTemplate: t("customers.create.downloadTemplate"),
+      uploadArea: t("customers.create.uploadArea"),
+      uploadAreaOr: t("customers.create.uploadAreaOr"),
+      uploadButton: t("customers.create.uploadButton"),
+      uploadResult: t("customers.create.uploadResult"),
+      successCount: t("customers.create.successCount"),
+      errorCount: t("customers.create.errorCount"),
+      uploadSuccess: t("customers.create.uploadSuccess"),
+      uploadError: t("customers.create.uploadError"),
+      validationRequired: t("customers.create.validationRequired"),
+      glnValidation: t("customers.create.glnValidation"),
+      glnValid: t("customers.create.glnValid"),
+      glnInvalid: t("customers.create.glnInvalid"),
+      glnDuplicate: t("customers.create.glnDuplicate"),
+      customerCreated: t("customers.create.customerCreated"),
+      saveCustomer: t("customers.create.saveCustomer"),
+      cancel: t("customers.create.cancel"),
+      back: t("customers.create.back"),
+      duplicateTitle: t("customers.create.duplicateTitle"),
+      duplicateBody: t("customers.create.duplicateBody"),
+      useExisting: t("customers.create.useExisting"),
+      createAnyway: t("customers.create.createAnyway"),
+    },
+  });
+});
+
+/**
+ * POST /customers/new
+ *
+ * Placeholder: we don't yet know the `portal.customers` insert shape, so for
+ * the demo this just flashes a success message and bounces back to the list.
+ * Real persistence comes after `prisma db pull` and a typed `customer` model.
+ */
+router.post("/new", (req, res) => {
+  const reqAny = req as Request & { t: (k: string) => string };
+  if (req.session) {
+    (req.session as unknown as { flash?: string }).flash = reqAny.t(
+      "customers.create.customerCreated"
+    );
+  }
+  res.redirect("/customers");
+});
 
 export default router;
